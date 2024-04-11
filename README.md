@@ -21,4 +21,4 @@ CLASSES:
 - [ ] Bounding box - Checking the positions of the particles are found within a specified a range, if not implement collision with the bounding walls. 
 - [ ] Simulation - Update the values of each particle for each frame
 
-![UML_Diagram](Users/kaisei/Pictures/UMLdiagram_progrAssi.png)
+<img width="844" alt="UMLdiagram_progrAssi" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/9797115b-2ff0-4d99-908b-d1c72a5ab5d8">
