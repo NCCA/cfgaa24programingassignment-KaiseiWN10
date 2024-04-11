@@ -20,3 +20,5 @@ CLASSES:
 - [ ] Particle - each particle will have it's own values like position, velocity, density etc.
 - [ ] Bounding box - Checking the positions of the particles are found within a specified a range, if not implement collision with the bounding walls. 
 - [ ] Simulation - Update the values of each particle for each frame
+
+![UML_Diagram](Users/kaisei/Pictures/UMLdiagram_progrAssi.png)
