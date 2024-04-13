@@ -21,4 +21,4 @@ CLASSES:
 - [ ] FluidContainer - Checking the positions of the particles are found within a specified a range, if not implement collision with the bounding walls. 
 - [ ] Simulation - Update the values of each particle for each frame
 
-<img width="844" alt="UMLdiagram_progrAssi" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/9797115b-2ff0-4d99-908b-d1c72a5ab5d8">
+<img width="644" alt="Screenshot 2024-04-13 at 08 00 26" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/c998a44b-aab3-4860-8b77-ace05c22d300">
