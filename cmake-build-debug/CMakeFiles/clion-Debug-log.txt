@@ -1,0 +1,36 @@
+/public/devel/23-24/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/public/devel/23-24/clion/bin/ninja/linux/x64/ninja -G Ninja -S /home/s5507922/labFolder/labcode-KaiseiWN10/ParticleSOA -B /home/s5507922/labFolder/labcode-KaiseiWN10/ParticleSOA/cmake-build-debug
+-- The C compiler identification is GNU 12.2.1
+-- The CXX compiler identification is GNU 12.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /opt/rh/gcc-toolset-12/root/usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /opt/rh/gcc-toolset-12/root/usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ZLIB: optimized;/public/devel/23-24/vcpkg/installed/x64-linux/lib/libz.a;debug;/public/devel/23-24/vcpkg/installed/x64-linux/debug/lib/libz.a (found version "1.3.1")  
+-- Found PNG: optimized;/public/devel/23-24/vcpkg/installed/x64-linux/lib/libpng16.a;debug;/public/devel/23-24/vcpkg/installed/x64-linux/debug/lib/libpng16d.a (found version "1.6.40") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Check if compiler accepts -pthread
+-- Check if compiler accepts -pthread - yes
+-- Found Threads: TRUE  
+-- Found TIFF: optimized;/public/devel/23-24/vcpkg/installed/x64-linux/lib/libtiff.a;debug;/public/devel/23-24/vcpkg/installed/x64-linux/debug/lib/libtiffd.a (found version "4.6.0")  
+-- Found LibLZMA: optimized;/public/devel/23-24/vcpkg/installed/x64-linux/lib/liblzma.a;debug;/public/devel/23-24/vcpkg/installed/x64-linux/debug/lib/liblzma.a (found version "5.4.4") 
+-- Found JPEG: optimized;/public/devel/23-24/vcpkg/installed/x64-linux/lib/libjpeg.a;debug;/public/devel/23-24/vcpkg/installed/x64-linux/debug/lib/libjpeg.a (found version "62") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP: TRUE (found version "4.5")  
+-- Found BZip2: optimized;/public/devel/23-24/vcpkg/installed/x64-linux/lib/libbz2.a;debug;/public/devel/23-24/vcpkg/installed/x64-linux/debug/lib/libbz2d.a (found version "1.0.8") 
+-- Looking for BZ2_bzCompressInit
+-- Looking for BZ2_bzCompressInit - found
+-- RapidJSON found. Headers: /public/devel/23-24/vcpkg/installed/x64-linux/share/rapidjson/../../include
+Using default home dir
+/home/s5507922/NGL
+Found Qt5 Using that
+-- Configuring done (2.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/s5507922/labFolder/labcode-KaiseiWN10/ParticleSOA/cmake-build-debug
