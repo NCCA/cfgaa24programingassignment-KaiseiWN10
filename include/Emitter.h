@@ -11,18 +11,19 @@ class Emitter
 public :
     Emitter(int _numParticles, int _maxAlive);
     float calcDensity(size_t currentPos);
-    void averageNeighDensity(size_t currentParticle);
+    float averageNeighDensity(size_t currentParticle);
     float calcProperty(size_t currentParticle);
     float magnitude(ngl::Vec4 currentParticle);
     void updateDensities();
     ngl::Vec3 calcPressure(size_t currentPos);
     float convertDensitytoPressure(float density);
     float calcSharedPressure(float densityA, float densityB);
-    void updateSpatialLookup(float radius);
+    void updateSpatialLookup();
     std::vector<ngl::Vec3> calcPropertyGradient(size_t currentParticle);
     ngl::Vec4 positionToCellCoord(ngl::Vec4 point);
     uint hashCell(int cellX, int cellY, int cellZ);
     uint getKeyfromHash(uint hash);
+    void updateStartIndices();
     void forEachPointWithinRadius(ngl::Vec3 currentPoint);
     float targetDensity;
     float pressureMultiplier;
@@ -52,7 +53,7 @@ private :
     std::vector<ngl::Vec3> pressure;
     std::vector<ngl::Vec3> pressure_Acc;
     std::vector<uint> spatialLookUp;
-    std::vector<int> startIndices;
+    std::vector<uint> startIndices;
     std::vector<ngl::Vec4> points;
     std::vector<ngl::Vec3> predictedPos;
 };
