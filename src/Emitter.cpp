@@ -24,6 +24,7 @@ Emitter::Emitter(int _numParticles, int _maxAlive)
     densities.resize(m_numParticles);
     pressure.resize(m_numParticles);
     calculated_properties.resize(m_numParticles);
+    aver_density.resize(m_numParticles);
     for(size_t i=0; i<m_numParticles; ++i)
     {
         createZeroParticle(i);
@@ -196,16 +197,11 @@ float Emitter::calcDensity(size_t currentParticle)
 
     for(int p=0; p<pos.size(); p++) //going through each particle
     {
-        //std::cout<<density << " ";
-        //std::cout<<"size of particle array: " << sizeof(pos) << std::endl;
-        //std::cout<<"currentpos " << pos[currentParticle].m_x << std::endl;
         float dist = magnitude(pos[p] - pos[currentParticle]);
-        //std::cout<<dist << " ";
         float influence = SmoothingKernel(1.0f, dist);
-        //std::cout<<influence<<" ";
         density += 1.0f * influence; //1.0f SHOULD BE REPLACED BY MASS
     }
-    //std::cout<<density<<" ";
+
     return density;
 }
 
@@ -218,6 +214,45 @@ void Emitter::updateDensities() //for optimisation - so it doesn't have to loop 
         densities[p] = calcDensity(p);
     }
 }
+
+float Emitter::averageNeighDensity(size_t currentParticle)
+{
+    float totalDensity = 0.0f;
+    int count = 0;
+
+    ngl::Vec4 currentCell = positionToCellCoord(pos[currentParticle]); // Gets the cell coordinate of the current particle
+
+    for (int dx = -1; dx <= 1; ++dx) // Iterates over the neighboring cells
+    {
+        for (int dy = -1; dy <= 1; ++dy)
+        {
+            for (int dz = -1; dz <= 1; ++dz)
+            {
+                ngl::Vec4 neighborCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighboring cell coordinate
+                uint key = getKeyfromHash(hashCell(static_cast<int>(neighborCell.m_x), static_cast<int>(neighborCell.m_y), static_cast<int>(neighborCell.m_z)));// Retrieves the key for the neighbouring cell
+                int cellStartIndex = startIndices[key];// Retrieve the start index of particles in the neighboring cell
+
+                for (int i = cellStartIndex; i < pos.size(); ++i) // Iterate over particles in the neighboring cell
+                {
+                    if (spatialLookUp[i] != key) break; // End of neighboring cell
+
+                    float dist = magnitude(pos[i] - pos[currentParticle]);// Calculate distance between current particle and neighboring particle
+
+                    // Check if neighboring particle is within a certain radius (optional)
+                    if (dist <= 1.0f)
+                    {
+                        totalDensity += densities[i];
+                        ++count;
+                    }
+                }
+            }
+        }
+    }
+    float averageDensity = (count > 0) ? totalDensity / count : 0.0f;// Calculate average density
+
+    return averageDensity;
+}
+
 
 float Emitter::calcProperty(size_t currentParticle)
 {
@@ -306,37 +341,48 @@ uint Emitter::getKeyfromHash(uint hash)//wraps the hash value around the length 
     return hash % pos.size();
 }
 
-void Emitter:: updateSpatialLookup(float radius)
+void Emitter::updateStartIndices()
+{
+    int currentStartIndex = -1;
+    uint prevKey = std::numeric_limits<uint>::max();
+
+    for (size_t p = 0; p < pos.size(); ++p)
+    {
+        uint currentKey = spatialLookUp[p];
+        if (currentKey != prevKey)
+        {
+            startIndices[currentKey] = currentStartIndex + 1;
+            //std::cout<<startIndices[currentKey]<<", "; PROBLEM
+            currentStartIndex = p;
+        }
+        prevKey = currentKey;
+    }
+}
+
+
+void Emitter::updateSpatialLookup()
 {
     spatialLookUp.resize(pos.size());
     startIndices.resize(pos.size());
-   for(size_t p=0; p<pos.size(); p++)//creates an unordered spatial-lookup
-   {
-       ngl::Vec4 cellCoord = positionToCellCoord(pos[p]);
-       uint cellHash = hashCell(cellCoord.m_x,cellCoord.m_y,cellCoord.m_z);
-       uint cellKey = getKeyfromHash(cellHash);
-       spatialLookUp[p] = cellKey;
-       startIndices[p] = std::numeric_limits<int>::max();
-   }
-//    {
 
-//        startIndices[p] = std::numeric_limits<int>::max(); //reset start index
-//    }
-//
-//    std::sort(spatialLookUp.begin(), spatialLookUp.end()); //sort by cell key
-//
-//    for(int p=0; p<points.size(); p++)//calculate start indices of each unique cell key in the spatial-lookup
-//    {
-//        uint key = spatialLookUp[p];
-//        uint keyPrev = (p == 0) ? std::numeric_limits<uint>::max() : spatialLookUp[p - 1];
-//        if(key != keyPrev)
-//        {
-//            startIndices[key] = p;
-//        }
-//    }
-//
-//    startIndices[0] = 0;
+    std::fill(startIndices.begin(), startIndices.end(), -1);
 
+    int currentStartIndex = -1;
+    uint prevKey = std::numeric_limits<uint>::max();
+
+    for (size_t p = 0; p < pos.size(); ++p)
+    {
+        uint currentKey = spatialLookUp[p];
+        spatialLookUp[p] = getKeyfromHash(hashCell(pos[p].m_x, pos[p].m_y, pos[p].m_z));
+        //std::cout<<spatialLookUp[p]<<", ";
+
+        if (currentKey != spatialLookUp[p])
+        {
+            startIndices[currentKey] = currentStartIndex + 1;
+            currentStartIndex = p;
+        }
+    }
+    updateStartIndices();
 }
 
 //void Emitter:: forEachPointWithinRadius(ngl::Vec3 currentPoint)
@@ -362,16 +408,16 @@ void Emitter:: updateSpatialLookup(float radius)
 
 void Emitter::update()
 {
-    float _dt=0.1f;
-    ngl::Vec3 gravity(0,-9.87, 0);
-//// choose number to birth
-// find first not alive and set as new particle
-    int numberToBirth=1000+ngl::Random::randomPositiveNumber(1500);
+    float _dt = 0.1f;
+    ngl::Vec3 gravity(0, -9.87, 0);
 
-    for(int i=0; i<numberToBirth; ++i)
+    // Choose number to birth
+    int numberToBirth = 1000 + ngl::Random::randomPositiveNumber(1500);
+
+    for (int i = 0; i < numberToBirth; ++i)
     {
-        size_t index=0;
-        for(auto a : isAlive )
+        size_t index = 0;
+        for (auto a : isAlive)
         {
             if (!a)
                 break;
@@ -383,64 +429,67 @@ void Emitter::update()
 
     float collisionDamping = 0.35f;
 
-    for(size_t p=0; p<m_numParticles; ++p)//loop through all particles
+    // Calculate dir[] for all particles
+    for (size_t p = 0; p < m_numParticles; ++p)
     {
-        if(isAlive[p])
+        if (isAlive[p])
         {
-            //for(size_t p=0; p<m_numParticles; ++p)
-            //{
-            updateSpatialLookup(1.0f);
-                dir[p] += gravity * _dt *0.5f;//calculating velocity
-                //std::cout << p << " ";
-                //predictedPos[p] = pos[p] + dir[p] * _dt;
-            //}
-
-            for(size_t p=0; p<m_numParticles; ++p)
-            {
-                //densities[p] = calcDensity(p);//calculate densities
-                //std::cout << densities[p] << " ";
-            }
-
-            for(size_t p=0; p<m_numParticles; ++p)
-            {
-                //pressure[p] = calcPressure(p);//calculating pressure-force
-                //std::cout << pressure[p].m_x << " ";
-                //pressure_Acc[p] = pressure[p] / densities[p];//calculating pressure-acceleration
-                //dir[p] = pressure_Acc[p] * _dt;//updating velocity
-            }
-
-            for(size_t p=0; p<m_numParticles; ++p)
-            {
-                //std::cout << dir[p].m_y << " ";
-                pos[p] += dir[p] * _dt;//updating position
-
-                pos[p].m_w += 0.1f;
-
-                //std::cout<<"size of particle array: " << sizeof(pos);
-                if(--life[p] ==0 || pos[p].m_y <=0.0f)
-                {
-                    createZeroParticle(p);
-                }
-                if (abs(pos[p].m_x) > 20)
-                {
-                    pos[p].m_x *= -1;
-                    dir[p].m_x *= -1 * collisionDamping;
-                }
-                if (abs(pos[p].m_y) > 20)
-                {
-                    pos[p].m_y *= -1;
-                    dir[p].m_y *= -1 * collisionDamping;
-                }
-
-                if (abs(pos[p].m_z) > 20)
-                {
-                    pos[p].m_z *= -1;
-                    dir[p].m_z *= -1 * collisionDamping;
-                }
-            }
-
-
+            dir[p] += gravity * _dt * 0.5f; // Calculating velocity
         }
+    }
 
+    updateSpatialLookup();
+
+    // Calculate densities[] for all particles
+    for (size_t p = 0; p < m_numParticles; ++p)
+    {
+        if (isAlive[p])
+        {
+            densities[p] = calcDensity(p); // Calculate average density for the current particle
+            //std::cout<<densities[p]<< ", ";
+        }
+    }
+
+    for (size_t p = 0; p < m_numParticles; ++p)
+    {
+        if (isAlive[p])
+        {
+            //calculated_properties[p] = averageNeighDensity(p);
+            aver_density[p] = averageNeighDensity(p); // Calculate average density for the current particle
+            std::cout<<aver_density[p]<<", ";
+        }
+    }
+
+    // Update pos[] for all particles
+    for (size_t p = 0; p < m_numParticles; ++p)
+    {
+        if (isAlive[p])
+        {
+            // Update position
+            pos[p] += dir[p] * _dt;
+            pos[p].m_w += 0.1f;
+
+            if (--life[p] == 0 || pos[p].m_y <= 0.0f)
+            {
+                createZeroParticle(p);
+            }
+            if (abs(pos[p].m_x) > 20)
+            {
+                pos[p].m_x *= -1;
+                dir[p].m_x *= -1 * collisionDamping;
+            }
+            if (abs(pos[p].m_y) > 20)
+            {
+                pos[p].m_y *= -1;
+                dir[p].m_y *= -1 * collisionDamping;
+            }
+            if (abs(pos[p].m_z) > 20)
+            {
+                pos[p].m_z *= -1;
+                dir[p].m_z *= -1 * collisionDamping;
+            }
+        }
     }
 }
+
+
