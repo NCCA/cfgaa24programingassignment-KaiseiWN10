@@ -16,6 +16,8 @@ public :
     float magnitude(ngl::Vec4 currentParticle);
     void updateDensities();
     ngl::Vec3 calcPressure(size_t currentPos);
+    ngl::Vec3 calcViscosity(size_t currentParticle);
+    ngl::Vec3 calcAcceleration(size_t currentPos);
     float convertDensitytoPressure(float density);
     float calcSharedPressure(float densityA, float densityB);
     void updateSpatialLookup();
@@ -25,6 +27,7 @@ public :
     uint getKeyfromHash(uint hash);
     void updateStartIndices();
     void forEachPointWithinRadius(ngl::Vec3 currentPoint);
+    void updateVelocity(size_t currentParticle);
     float targetDensity;
     float pressureMultiplier;
     void update();
@@ -56,6 +59,8 @@ private :
     std::vector<uint> startIndices;
     std::vector<ngl::Vec4> points;
     std::vector<ngl::Vec3> predictedPos;
+    std::vector<ngl::Vec3> viscosity;
+    std::vector<ngl::Vec3> acceleration;
 };
 
 #endif
