@@ -1,4 +1,4 @@
-# Particle-based fluid simulation using NGL library, C++
+# Particle-based fluid simulation - Computing for Graphics and Animation 23/24
 
 For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL library, offering an efficient simulation framework. 
 
