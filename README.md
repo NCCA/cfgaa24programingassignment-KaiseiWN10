@@ -4,7 +4,10 @@
 The video of my running program can be found in my 'Images+video' folder.
 
 ## Introduction
-For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL library, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations. 
+For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL and OpenGL libraries, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations. 
+
+## Background Research
+I have implemented one of the common particle-based methods used to simulate fluids, called 'Smoothed Particle Hydrodynamics', which is an example of a Langrangian method as stated above. Particles in this system have attributes like mass and velocity much like most particle simulations, however, further attributes, including density and pressure, are required to alter the positions to display fluid-like motions. 
 
 ## Implementation
 Particle system properties:
@@ -19,24 +22,18 @@ Particle system properties:
 
 This particle system heavily employs object-oriented programming principles with each particle possesing the attributes listed above. The program revolves around a single central class, 'Emitter', where calculations for these attributes are performed and applied, forming our fluidic motion. Moreover, the render() function stands out as it utilises provided shaders to visually represent the particles onto the screen. Equally important is the update() function which plays an essential role in dynamically refreshing the OpenGL scene. This function manages the lifespan and behaviour of particles within the system, ensuring the particles behave realistically and efficiently, leveraging spatial hashing and updating only alive particles.
 
+One of the most performance-hindering procedures in this program is very much the neighbour search for each particle which requires updating at the start of every frame due to their position changes. I initially approached this functionality via a simple brute-force method. This is where a list of neighbours can be used as an attribute of the 'Particle' struct and depending on its distance with other particles they would be added to that particle's list. However, I very quickly came to the conclusion that it was an inefficient approach to the problem. As a result, I implemented a method called spatial-hashing where the simulation space is divided into a grid of cells and each particle is assigned a cell based on its position. This prevents the need of checking the distance of a particle with all other particles, only ones that are within distance, going from a time complexity of O(n^2) to O(n).  
+
 ![alt tag](http://nccastaff.bournemouth.ac.uk/jmacey/GraphicsLib/Demos/BlankNGL.png)
-
-## Background Research
-
-
-
-## Techniques Used
 
 ## UML Diagram
 
 ![UMLdiagram](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/3d1b7fa3-899d-42d7-9640-f9700ea25877)
 
 ## Conclusion
-
 In conclusion, through the process of completing this assignment I have gained a stronger understanding in the advantages of using object-oriented programming and applying it to creating real world simulations like this particle based fluid system, and I have come to understand that it is a powerful tool to use within computer graphics. To further develop this program, I would focus on improving the accuracy of the fluid motion, and this may involve implementing more particle attributes such as surface-tension. Further, I would also look at ways to optimise this program so that it can run slightly faster. I would try to do that mostly by utilising multithreading to distribute computational tasks across multiple CPU cores, where time consuming procedures such as the 'neighbour' search can be executed in parallel with OpenMP. This would be extremely beneficial as the main issue has been the simulation performance.
 
 ## References
-
 Documentation - Particle Simulation using CUDA, S.Green, 2012
 https://web.archive.org/web/20140725014123/https://docs.nvidia.com/cuda/samples/5_Simulations/particles/doc/particles.pdf
 
