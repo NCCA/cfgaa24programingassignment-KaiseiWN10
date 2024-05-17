@@ -24,7 +24,7 @@ This particle system heavily employs object-oriented programming principles with
 
 One of the most performance-hindering procedures in this program is very much the neighbour search for each particle which requires updating at the start of every frame due to their position changes. I initially approached this functionality via a simple brute-force method. This is where a list of neighbours can be used as an attribute of the 'Particle' struct and depending on its distance with other particles they would be added to that particle's list. However, I very quickly came to the conclusion that it was an inefficient approach to the problem. As a result, I implemented a method called spatial-hashing where the simulation space is divided into a grid of cells and each particle is assigned a cell based on its position. This prevents the need of checking the distance of a particle with all other particles, only ones that are within distance, going from a time complexity of O(n^2) to O(n).  
 
-![alt tag](http://nccastaff.bournemouth.ac.uk/jmacey/GraphicsLib/Demos/BlankNGL.png)
+<img width="214" alt="Screenshot 2024-05-17 at 22 56 57" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/062abf93-dde4-429b-a74d-07da2a6202a6">
 
 ## UML Diagram
 
