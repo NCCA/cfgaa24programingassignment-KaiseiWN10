@@ -1,4 +1,5 @@
-# Kaisei Wieczorek-Numao (s5507922) - Particle-based fluid simulation - Computing for Graphics and Animation 23/24
+# Kaisei Wieczorek-Numao (s5507922)
+# Particle-based fluid simulation - Computing for Graphics and Animation 23/24
 
 The video of my running program can be found in my 'Images+video' folder.
 
