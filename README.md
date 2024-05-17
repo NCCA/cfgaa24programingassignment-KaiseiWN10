@@ -1,5 +1,7 @@
 # Kaisei Wieczorek-Numao (s5507922) - Particle-based fluid simulation - Computing for Graphics and Animation 23/24
 
+The video of my program can be found in my 'Images/video' folder.
+
 For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL library, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces such as gravity..
 
 * Assign variables to each particle
