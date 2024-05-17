@@ -4,7 +4,15 @@ The video of my running program can be found in my 'Images+video' folder.
 
 For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL library, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving complex differential equations. 
 
-* Assign variables to each particle
+Particle system properties implemented:
+* Position
+* Velocity
+* Size
+* Colour
+* Life
+* Density
+* Pressure
+* Acceleration
 
 ![alt tag](http://nccastaff.bournemouth.ac.uk/jmacey/GraphicsLib/Demos/BlankNGL.png)
 
