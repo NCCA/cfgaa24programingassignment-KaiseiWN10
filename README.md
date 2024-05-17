@@ -8,11 +8,13 @@ For this project, I have computed a particle-based fluid simulation in C++ utili
 
 ## Background Research
 
-
-
 ## Techniques Used
 
 ## UML Diagram
+
+![UMLdiagram](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/3d1b7fa3-899d-42d7-9640-f9700ea25877)
+
+## Conclusion
 
 ## References
 
