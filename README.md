@@ -33,6 +33,9 @@ https://nccastaff.bournemouth.ac.uk/jmacey/MastersProject/MSc16/15/thesis.pdf
 Documentation - Real-Time Fluid Dynamics for Games, J.Stam, Date unspecified 
 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
 
+Documentation - Python Dynamic Mode Decomposition, N.Demo, M.Tezzele, G.Rozza, 2018
+https://joss.theoj.org/papers/10.21105/joss.00530.pdf
+
 Video - Coding Adventure: Simulating Fluids, S.Lague, 2023
 https://www.youtube.com/watch?v=rSKMYc1CQHE&t=2229s
 
