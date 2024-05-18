@@ -69,6 +69,9 @@ http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
 Documentation - Python Dynamic Mode Decomposition, N.Demo, M.Tezzele, G.Rozza, 2018
 https://joss.theoj.org/papers/10.21105/joss.00530.pdf
 
+Documentation - A numerical approach to the testing of the fission hypothesis, L. B. Lucy, 1977
+https://articles.adsabs.harvard.edu/cgi-bin/nph-iarticle_query?1977AJ.....82.1013L&amp;data_type=PDF_HIGH&amp;whole_paper=YES&amp;type=PRINTER&amp;filetype=.pdf
+
 Video - Coding Adventure: Simulating Fluids, S.Lague, 2023
 https://www.youtube.com/watch?v=rSKMYc1CQHE&t=2229s
 
