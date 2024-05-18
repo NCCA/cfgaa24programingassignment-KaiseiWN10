@@ -16,6 +16,7 @@ public :
     ngl::Vec3 getPressureKernel(ngl::Vec4 dist);
     ngl::Vec3 calcPressure(size_t currentPos);
     ngl::Vec3 calcViscosity(size_t currentParticle);
+    ngl::Vec3 calcBuoyancy(size_t currentParticle, ngl::Vec3 gravity);
     void updateSpatialLookup();
     ngl::Vec4 positionToCellCoord(ngl::Vec4 point);
     uint hashCell(int cellX, int cellY, int cellZ);
@@ -45,6 +46,7 @@ private :
     std::vector<float> calculated_properties;
     std::vector<float> densities;
     std::vector<float> aver_density;
+    std::vector<ngl::Vec3> buoyancy;
     std::vector<bool> isAlive;
     std::vector<ngl::Vec3> gradient;
     std::vector<ngl::Vec3> pressure;
