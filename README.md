@@ -8,16 +8,14 @@ For this project, I have computed a particle-based fluid simulation in C++ utili
 
 ![Screenshot from 2024-05-18 20-04-30](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/2ba840f9-f69e-414b-9a6f-a0af7679a1fa)  ![Screenshot from 2024-05-18 20-04-35](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/380f6323-e25c-402f-8220-885afc74cb95)
 
-
-
 ## Background Research
 I have implemented one of the common particle-based methods used to simulate fluids, called 'Smoothed Particle Hydrodynamics', which is an example of a Langrangian method as stated above. Particles in this system have attributes like mass and velocity much like most particle simulations, however, further attributes, including density and pressure, are required to alter the positions to display fluid-like motions. Over a period of time, a set of particles are generated and move according to its assigned calculations until it reaches its life-time, where it is then destroyed.
 
 Another important factor of the SPH method is its use of kernels. Kernels model a delta function which are relative to the particles' positions, and are used for calculating density, pressure and viscosity. For this program I have implemented the spiky, Poly6 (smoothing kernel) and the viscosity kernel and are all used for SPH approxmation but all play a different a different role as briefly stated below:
 
-*Spiky kernel - used for pressure calculation. Produces sharper, stronger gradients than the Poly6 kernel.
-*Poly6 kernel - Used for density calculation. Determines the influence of a particle over a certain distance. This decreases with distance meaning the particle that are closer have more of an effect.
-*Viscosity kernel - Used for viscosity calculation. Simulates the viscous drag forces that act between neighbouring particles, smoothing out viscosity differences.
+* Spiky kernel - used for pressure calculation. Produces sharper, stronger gradients than the Poly6 kernel.
+* Poly6 kernel - Used for density calculation. Determines the influence of a particle over a certain distance. This decreases with distance meaning the particle that are closer have more of an effect.
+* Viscosity kernel - Used for viscosity calculation. Simulates the viscous drag forces that act between neighbouring particles, smoothing out viscosity differences.
 
 ## Implementation
 Particle system properties:
