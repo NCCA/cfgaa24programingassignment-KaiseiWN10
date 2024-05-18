@@ -7,7 +7,9 @@ The video of my running program can be found in my 'Images+video' folder.
 For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL and OpenGL libraries, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations. 
 
 ## Background Research
-I have implemented one of the common particle-based methods used to simulate fluids, called 'Smoothed Particle Hydrodynamics', which is an example of a Langrangian method as stated above. Particles in this system have attributes like mass and velocity much like most particle simulations, however, further attributes, including density and pressure, are required to alter the positions to display fluid-like motions. 
+I have implemented one of the common particle-based methods used to simulate fluids, called 'Smoothed Particle Hydrodynamics', which is an example of a Langrangian method as stated above. Particles in this system have attributes like mass and velocity much like most particle simulations, however, further attributes, including density and pressure, are required to alter the positions to display fluid-like motions. Over a period of time, a set of particles are generated and move according to its assigned calculations until it reaches its life-time, where it is then destroyed.
+
+Another important factor of the SPH method is its use of kernels. Kernels model a delta function which are relative to the particles' positions, and are used for calculating density, pressure and viscosity.
 
 ## Implementation
 Particle system properties:
@@ -18,6 +20,7 @@ Particle system properties:
 * Life
 * Mass-Density
 * Pressure
+* Viscosity
 * Acceleration
 
 This particle system heavily employs object-oriented programming principles with each particle possesing the attributes listed above. The program revolves around a single central class, 'Emitter', where calculations for these attributes are performed and applied, forming our fluidic motion. Moreover, the render() function stands out as it utilises provided shaders to visually represent the particles onto the screen. Equally important is the update() function which plays an essential role in dynamically refreshing the OpenGL scene. This function manages the lifespan and behaviour of particles within the system, ensuring the particles behave realistically and efficiently, leveraging spatial hashing and updating only alive particles.
