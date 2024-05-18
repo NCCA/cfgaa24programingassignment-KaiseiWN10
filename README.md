@@ -11,6 +11,9 @@ For this project, I have computed a particle-based fluid simulation in C++ utili
 ## Background Research
 I have implemented one of the common particle-based methods used to simulate fluids, called 'Smoothed Particle Hydrodynamics', which is an example of a Langrangian method as stated above. Particles in this system have attributes like mass and velocity much like most particle simulations, however, further attributes, including density and pressure, are required to alter the positions to display fluid-like motions. Over a period of time, a set of particles are generated and move according to its assigned calculations until it reaches its life-time, where it is then destroyed.
 
+<img width="586" alt="Screenshot 2024-05-18 at 20 12 24" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/df2dcc2c-acaa-4f58-908e-5095a3c3ad65">
+
+
 Another important factor of the SPH method is its use of kernels. Kernels model a delta function which are relative to the particles' positions, and are used for calculating density, pressure and viscosity. For this program I have implemented the spiky, Poly6 (smoothing kernel) and the viscosity kernel and are all used for SPH approxmation but all play a different a different role as briefly stated below:
 
 * Spiky kernel - used for pressure calculation. Produces sharper, stronger gradients than the Poly6 kernel.
