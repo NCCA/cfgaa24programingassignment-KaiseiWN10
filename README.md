@@ -4,12 +4,20 @@
 The video of my running program can be found in my 'Images+video' folder.
 
 ## Introduction
-For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL and OpenGL libraries, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations. 
+For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL and OpenGL libraries, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations, and also the code provided within the labs was a perfect foundation to build from.
+
+![Screenshot from 2024-05-18 20-04-30](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/2ba840f9-f69e-414b-9a6f-a0af7679a1fa)  ![Screenshot from 2024-05-18 20-04-35](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/380f6323-e25c-402f-8220-885afc74cb95)
+
+
 
 ## Background Research
 I have implemented one of the common particle-based methods used to simulate fluids, called 'Smoothed Particle Hydrodynamics', which is an example of a Langrangian method as stated above. Particles in this system have attributes like mass and velocity much like most particle simulations, however, further attributes, including density and pressure, are required to alter the positions to display fluid-like motions. Over a period of time, a set of particles are generated and move according to its assigned calculations until it reaches its life-time, where it is then destroyed.
 
-Another important factor of the SPH method is its use of kernels. Kernels model a delta function which are relative to the particles' positions, and are used for calculating density, pressure and viscosity.
+Another important factor of the SPH method is its use of kernels. Kernels model a delta function which are relative to the particles' positions, and are used for calculating density, pressure and viscosity. For this program I have implemented the spiky, Poly6 (smoothing kernel) and the viscosity kernel and are all used for SPH approxmation but all play a different a different role as briefly stated below:
+
+*Spiky kernel - used for pressure calculation. Produces sharper, stronger gradients than the Poly6 kernel.
+*Poly6 kernel - Used for density calculation. Determines the influence of a particle over a certain distance. This decreases with distance meaning the particle that are closer have more of an effect.
+*Viscosity kernel - Used for viscosity calculation. Simulates the viscous drag forces that act between neighbouring particles, smoothing out viscosity differences.
 
 ## Implementation
 Particle system properties:
@@ -28,6 +36,10 @@ This particle system heavily employs object-oriented programming principles with
 One of the most performance-hindering procedures in this program is very much the neighbour search for each particle which requires updating at the start of every frame due to their position changes. I initially approached this functionality via a simple brute-force method. This is where a list of neighbours can be used as an attribute of the 'Particle' struct and depending on its distance with other particles they would be added to that particle's list. However, I very quickly came to the conclusion that it was an inefficient approach to the problem. As a result, I implemented a method called spatial-hashing where the simulation space is divided into a grid of cells and each particle is assigned a cell based on its position. This prevents the need of checking the distance of a particle with all other particles, only ones that are within distance, going from a time complexity of O(n^2) to O(n).  
 
 <img width="214" alt="Screenshot 2024-05-17 at 22 56 57" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/062abf93-dde4-429b-a74d-07da2a6202a6">
+
+# Testing
+Through this process, I found that it was very important to find the correct combination of values for my constants and kernel sizes to produce sensible results. Therefore, I began experimenting with different values and explored the effect they had on my overall simulation which was interesting to see. Results of some of my tests are shown below:
+
 
 ## UML Diagram
 
