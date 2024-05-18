@@ -29,6 +29,7 @@ Particle system properties:
 * Mass-Density
 * Pressure
 * Viscosity
+* Buoyancy
 * Acceleration
 
 This particle system heavily employs object-oriented programming principles with each particle possesing the attributes listed above. The program revolves around a single central class, 'Emitter', where calculations for these attributes are performed and applied, forming our fluidic motion. Moreover, the render() function stands out as it utilises provided shaders to visually represent the particles onto the screen. Equally important is the update() function which plays an essential role in dynamically refreshing the OpenGL scene. This function manages the lifespan and behaviour of particles within the system, ensuring the particles behave realistically and efficiently, leveraging spatial hashing and updating only alive particles.
