@@ -13,17 +13,17 @@ public :
     float calcDensity(size_t currentPos);
     float averageNeighDensity(size_t currentParticle);
     float magnitude(ngl::Vec4 currentParticle);
-    void updateDensities();
+    ngl::Vec3 getPressureKernel(ngl::Vec4 dist);
     ngl::Vec3 calcPressure(size_t currentPos);
     ngl::Vec3 calcViscosity(size_t currentParticle);
     void updateSpatialLookup();
-    std::vector<ngl::Vec3> calcPropertyGradient(size_t currentParticle);
     ngl::Vec4 positionToCellCoord(ngl::Vec4 point);
     uint hashCell(int cellX, int cellY, int cellZ);
     uint getKeyfromHash(uint hash);
     void updateStartIndices();
     ngl::Vec3 updateVelocity(size_t currentParticle);
     void checkBoundary(size_t currentParticle);
+    void updateColour(size_t currentParticle);
     void update();
     void render() const;
 
