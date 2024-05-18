@@ -41,6 +41,11 @@ One of the most performance-hindering procedures in this program is very much th
 # Testing
 Through this process, I found that it was very important to find the correct combination of values for my constants and kernel sizes to produce sensible results. Therefore, I began experimenting with different values and explored the effect they had on my overall simulation which was interesting to see. Results of some of my tests are shown below:
 
+Higher viscosity constant e.g. 7.0:
+![Screenshot from 2024-05-18 22-04-37](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/aa676544-c5ca-4e58-8c57-8c61afb9a500)
+
+Lower viscosity constant e.g. 3.5:
+
 
 ## UML Diagram
 
