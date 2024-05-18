@@ -45,7 +45,7 @@ Higher viscosity constant e.g. 7.0:
 ![Screenshot from 2024-05-18 22-04-37](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/aa676544-c5ca-4e58-8c57-8c61afb9a500)
 
 Lower viscosity constant e.g. 3.5:
-
+![Screenshot from 2024-05-18 22-08-14](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/bf1a1d3c-5091-45f8-a2ef-36bb95b6bcf9)
 
 ## UML Diagram
 
