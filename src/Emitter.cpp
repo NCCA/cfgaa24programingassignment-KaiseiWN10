@@ -27,6 +27,7 @@ Emitter::Emitter(int _numParticles, int _maxAlive)
     calculated_properties.resize(m_numParticles);
     aver_density.resize(m_numParticles);
     acceleration.resize(m_numParticles);
+    buoyancy.resize(m_numParticles);
 
     for(size_t i=0; i<m_numParticles; ++i)
     {
@@ -92,6 +93,7 @@ ngl::Vec3 Emitter::randomVectorOnSphere()
 void Emitter::render() const
 {
     glEnable(GL_PROGRAM_POINT_SIZE);
+    //glPointSize(4.0f);
     m_vao->bind();
     m_vao->setData(0,ngl::AbstractVAO::VertexData(m_numParticles*sizeof(ngl::Vec4),pos[0].m_x));
     m_vao->setVertexAttributePointer(0,4,GL_FLOAT,0,0);
@@ -104,7 +106,7 @@ void Emitter::render() const
     glDisable(GL_PROGRAM_POINT_SIZE);
 }
 
-float SmoothingKernel(float radius, float dist)
+float SmoothingKernel(float radius, float dist)//Poly6 kernel
 {
     if(dist < radius)
     {
@@ -115,82 +117,11 @@ float SmoothingKernel(float radius, float dist)
     return 0;
 }
 
-float SpikyKernelPow3(float radius, float dist)
-{
-    if(dist < radius)
-    {
-        float scale = 15 / (M_PI * std::pow(radius, 6));
-        float v = radius - dist;
-        return v*v*v*v*scale;
-    }
-    return 0;
-}
-
-float SpikyKernelPow2(float radius, float dist)
-{
-    if(dist < radius)
-    {
-        float scale = 15 / (2 * M_PI * std::pow(radius, 5));
-        float v = radius - dist;
-        return v*v*v*v*scale;
-    }
-    return 0;
-}
-
-float SpikyPow3_Deriv(float radius, float dist)
-{
-    if(dist <= radius)
-    {
-        float scale = 45 / (pow(radius,6) * M_PI);
-        float v = radius - dist;
-        return  -v*v*scale;
-    }
-    return 0;
-}
-
-float SpikyPow2_Deriv(float radius, float dist)
-{
-    if(dist <= radius)
-    {
-        float scale = 15 / (pow(radius,5) * M_PI);
-        float v = radius - dist;
-        return  -v*scale;
-    }
-    return 0;
-}
-
-float densityKernel(float radius, float dist)
-{
-    return SpikyKernelPow2(radius, dist);
-}
-
-float nearDensityKernel(float radius, float dist)
-{
-    return SpikyKernelPow3(radius, dist);
-}
-
-float density_Deriv(float radius, float dist)
-{
-    return SpikyPow2_Deriv(radius, dist);
-}
-
-float nearDensity_Deriv(float radius, float dist)
-{
-    return SpikyPow3_Deriv(radius, dist);
-}
-
-static float SmoothingKernel_Deriv(float radius, float dist)
-{
-    if(dist>=radius) return 0;
-    float scale = 12 / (std::pow(radius,4) * M_PI);
-    return (dist-radius) * scale;
-}
-
 float Emitter::magnitude(ngl::Vec4 currentParticle)
 {
     return std::sqrt(currentParticle.m_x*currentParticle.m_x +
-                             currentParticle.m_y*currentParticle.m_y +
-                             currentParticle.m_z*currentParticle.m_z);
+                     currentParticle.m_y*currentParticle.m_y +
+                     currentParticle.m_z*currentParticle.m_z);
 }
 
 float Emitter::calcDensity(size_t currentParticle) //density calculation
@@ -262,8 +193,8 @@ ngl::Vec3 Emitter::calcPressure(size_t currentParticle) //pressure calculation
         {
             for (int dz = -1; dz <= 1; ++dz)
             {
-                ngl::Vec4 neighborCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighboring cell coordinate
-                uint key = getKeyfromHash(hashCell(static_cast<int>(neighborCell.m_x), static_cast<int>(neighborCell.m_y), static_cast<int>(neighborCell.m_z)));// Retrieves the key for the neighbouring cell
+                ngl::Vec4 neighbourCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighboring cell coordinate
+                uint key = getKeyfromHash(hashCell(static_cast<int>(neighbourCell.m_x), static_cast<int>(neighbourCell.m_y), static_cast<int>(neighbourCell.m_z)));// Retrieves the key for the neighbouring cell
                 int cellStartIndex = startIndices[key];// Retrieve the start index of particles in the neighboring cell
 
                 for (int i = cellStartIndex; i < pos.size(); ++i) // Iterate over particles in the neighboring cell
@@ -271,11 +202,9 @@ ngl::Vec3 Emitter::calcPressure(size_t currentParticle) //pressure calculation
                     if (spatialLookUp[i] != key) break; // End of neighboring cell
 
                     ngl::Vec4 dist = pos[i] - pos[currentParticle];// Calculate distance between current particle and neighboring particle
-                    float press_Kernel;
                     pressure[currentParticle].m_x += ((densities[i] + densities[currentParticle])/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_x;//REPLACE 1.0F BY MASS
                     pressure[currentParticle].m_y += ((densities[i] + densities[currentParticle])/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_y;//REPLACE 1.0F BY MASS
                     pressure[currentParticle].m_z += ((densities[i] + densities[currentParticle])/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_z;//REPLACE 1.0F BY MASS
-
                 }
             }//end of dz loop
         }//end of dy loop
@@ -326,7 +255,14 @@ ngl::Vec3 Emitter::calcViscosity(size_t currentParticle)
     }//end of dx loop
     viscosity[currentParticle] *= vConst;
     return viscosity[currentParticle];
-    std::cout<<viscosity[currentParticle].m_x;
+}
+
+ngl::Vec3 Emitter::calcBuoyancy(size_t currentParticle, ngl::Vec3 gravity)
+{
+    float const buoyConst = 0.0f;
+    float const restDensity = 998.2f;
+
+    return buoyConst * (densities[currentParticle] - restDensity) * gravity;
 }
 
 ngl::Vec4 Emitter::positionToCellCoord(ngl::Vec4 point) //converting particle position to it's cell coordinate
@@ -437,7 +373,7 @@ ngl::Vec3 Emitter:: updateVelocity(size_t currentParticle) //updating velocity v
 
 void Emitter:: checkBoundary(size_t currentParticle) //Ensuring the particles remain within the specified boundary
 {
-    float const collisionDamping = 0.35f; // used to reduce the velocity of the particle when colliding with a boundary
+    float const collisionDamping = 6.8f; // used to reduce the velocity of the particle when colliding with a boundary
     ngl::Vec3 const boundary = {15.0f,30.0f,25.0f};//specified boundary
 
     if (abs(pos[currentParticle].m_x) > boundary.m_x || abs(pos[currentParticle].m_x) < -boundary.m_x)//checking x-component of particle
@@ -514,26 +450,25 @@ void Emitter::update()
         if (isAlive[p])
         {
             aver_density[p] = averageNeighDensity(p); // Calculate average density for the current particle
-            pressure[p] = calcPressure(p);
+            pressure[p] = calcPressure(p);// calculate pressure for each particle
         }
     }
 
     for (size_t p = 0; p < m_numParticles; ++p)
     {
-        viscosity[p] = calcViscosity(p);
+        viscosity[p] = calcViscosity(p);// calculate viscosity for each particle
+        buoyancy[p] = calcBuoyancy(p, gravity);// calculate buoyancy for each particle
     }
 
     for (size_t p = 0; p < m_numParticles; ++p)
     {
         if (isAlive[p])
         {
-            acceleration[p].m_x = pressure[p].m_x + viscosity[p].m_x + accConst;
-            acceleration[p].m_y = pressure[p].m_y + viscosity[p].m_y + accConst;
-            acceleration[p].m_z = pressure[p].m_z + viscosity[p].m_z + accConst;
+            //calculates acceleration for each particle - adds all forces as stated in Navier-Stokes eq.
+            acceleration[p].m_x = pressure[p].m_x + viscosity[p].m_x + accConst + buoyancy[p].m_x + gravity.m_x;
+            acceleration[p].m_y = pressure[p].m_y + viscosity[p].m_y + accConst + buoyancy[p].m_y + gravity.m_y;
+            acceleration[p].m_z = pressure[p].m_z + viscosity[p].m_z + accConst + buoyancy[p].m_z + gravity.m_z;
             dir[p] = updateVelocity(p);
-            //std::cout<< dir[p].m_x + dir[p].m_y + dir[p].m_z << std::endl;
-            //std::cout<< dir[p].m_y << std::endl;
-            //std::cout<< dir[p].m_z << std::endl;
         }
     }
 
@@ -544,7 +479,7 @@ void Emitter::update()
         {
             // Update position
             pos[p] += dir[p] * _dt * acceleration[p];
-            pos[p].m_w += 0.1f;
+            pos[p].m_w = 0.3f;
             updateColour(p);
             checkBoundary(p);
 
@@ -555,5 +490,3 @@ void Emitter::update()
         }
     }
 }
-
-
