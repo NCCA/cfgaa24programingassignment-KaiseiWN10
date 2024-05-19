@@ -51,7 +51,7 @@ As displayed, lowering the viscosity constant increases the space between the pa
 
 ## UML Diagram
 
-![UMLdiagram](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/3d1b7fa3-899d-42d7-9640-f9700ea25877)
+<img width="533" alt="Screenshot 2024-05-19 at 01 53 48" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/293d01ce-dfad-4876-b6e5-4e9448300f41">
 
 ## Conclusion
 In conclusion, through the process of completing this assignment I have gained a stronger understanding in the advantages of using object-oriented programming and applying it to creating real world simulations like this particle based fluid system, and I have come to understand that it is a powerful tool to use within computer graphics. To further develop this program, I would focus on improving the accuracy of the fluid motion, and this may involve implementing more particle attributes such as surface-tension. Further, I would also look at ways to optimise this program so that it can run slightly faster. I would try to do that mostly by utilising multithreading to distribute computational tasks across multiple CPU cores, where time consuming procedures such as the 'neighbour' search can be executed in parallel with OpenMP. This would be extremely beneficial as the main issue has been the simulation performance.
