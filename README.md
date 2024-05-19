@@ -4,7 +4,7 @@
 The video of my running program can be found in my 'Images+video' folder.
 
 ## Introduction
-For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL library, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations, and also the code provided within the labs was a perfect foundation to build from.
+For this project, I have computed a particle-based fluid simulation in C++ utilising the NGL library, offering an efficient simulation framework. This process involved exploring the underlying principles of fluid dynamics, including the use of the Navier-Stokes equation to devise an algorithm to model interactions between particles and external forces, such as gravity in a 3D environment. Furthermore, I have taken the Langrangian approach where each particle holds its own properties such as their position, which consistently gets updated per frame. I decided on taking this route as it simplified the simulation by focusing on individual particles as opposed to solving more complex differential equations, and also the code provided within the labs was a perfect foundation to build from. 
 
 ![Screenshot from 2024-05-18 20-04-30](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/2ba840f9-f69e-414b-9a6f-a0af7679a1fa)  ![Screenshot from 2024-05-18 20-04-35](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/380f6323-e25c-402f-8220-885afc74cb95)
 
@@ -56,6 +56,8 @@ Lower cell-size value (h_const) e.g. 1.0:
 ![Screenshot from 2024-05-19 02-31-38](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/23b6e7d6-3969-4133-8697-0ba0988b46b0)
 
 You can see that the size of the cell-size changes the scale of my simulation causing the particles to be more spaced out. I want the particles to be as condensed as much as possible so that particle interactions can take place to produce more reasonable calculated values.  Therefore, keeping this constant around 1.0 will be most suited. 
+
+Additionally, for testing purposes I wanted to identify whether I was getting particles of different velocities in the correct areas so I decided to manage the colour change of the particles by their velocity values. Particles of higher velocity were found in red and the particles of lower viscosity were found in blue. As expected, the bluer particles were found more towards the centre where they're emitted and the red particles found further outwards, displaying correct results. I decided to keep this feature to ensure the correct reults were continuously being produced.
 
 ## UML Diagram
 
