@@ -25,6 +25,7 @@ public :
     ngl::Vec3 updateVelocity(size_t currentParticle);
     void checkBoundary(size_t currentParticle);
     void updateColour(size_t currentParticle);
+    void debugPressure(ngl::Vec4 dist);
     void update();
     void render() const;
 
@@ -34,7 +35,7 @@ private :
     void createZeroParticle(size_t _p);
     size_t m_numParticles;
     ngl::Vec3 m_position={0,0,0};
-    float m_spread = 15.0f;
+    float m_spread = 50.0f;
     ngl::Vec3 m_emitDir = {0,20.0f,0};
     int m_maxAlive;
     std::unique_ptr<ngl::MultiBufferVAO> m_vao;
