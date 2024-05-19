@@ -49,6 +49,14 @@ Lower viscosity constant e.g. 3.5:
 
 As displayed, lowering the viscosity constant increases the space between the particles allowing them to move more freely - less condensed. This is much more suitable for when aiming to replicate a less viscous fluid like water which is what I was aiming towards.
 
+Higher cell-size value (h_const) e.g. 9.0:
+![Screenshot from 2024-05-19 02-30-46](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/9c8cb50f-3e9f-446a-acf2-70c4691136a6)
+
+Lower cell-size value (h_const) e.g. 1.0:
+![Screenshot from 2024-05-19 02-31-38](https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/23b6e7d6-3969-4133-8697-0ba0988b46b0)
+
+You can see that the size of the cell-size changes the scale of my simulation causing the particles to be more spaced out. I want the particles to be as condensed as much as possible so that particle interactions can take place to produce more reasonable calculated values.  Therefore, keeping this constant around 1.0 will be most suited. 
+
 ## UML Diagram
 
 <img width="533" alt="Screenshot 2024-05-19 at 01 53 48" src="https://github.com/NCCA/cfgaa24programingassignment-KaiseiWN10/assets/160144511/293d01ce-dfad-4876-b6e5-4e9448300f41">
