@@ -11,7 +11,7 @@
 NGLScene::NGLScene()
 {
   // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
-  setTitle("Blank NGL");
+  setTitle("Particle Fluid-Simulation");
 }
 
 
@@ -29,18 +29,17 @@ void NGLScene::resizeGL(int _w , int _h)
   m_project = ngl::perspective(45.0f,float(_w)/_h,0.1f,200);
 }
 
-
 void NGLScene::initializeGL()
 {
   // we must call that first before any other GL commands to load and link the
   // gl commands from the lib, if that is not done program will crash
   ngl::NGLInit::initialize();
-  glClearColor(0.7f, 0.7f, 0.7f, 1.0f);			   // Grey Background
+  glClearColor(0.9f, 0.9f, 0.6f, 1.0f);			   // Yellow Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
   glEnable(GL_MULTISAMPLE);
-  m_emitter=std::make_unique<Emitter>(4000,5000);//3000 = no of particles
+  m_emitter=std::make_unique<Emitter>(5000,10000);// 3000 = no. of particles, 5000 = max. life duration
   ngl::ShaderLib::loadShader("ParticleShader","shaders/ParticleVertex.glsl","shaders/ParticleFragment.glsl");
   ngl::ShaderLib::use("ParticleShader");
   m_view = ngl::lookAt({0,100,100},{0,0,0},{0,1,0});
