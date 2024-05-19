@@ -117,11 +117,11 @@ float SmoothingKernel(float radius, float dist)//Poly6 kernel
     return 0;
 }
 
-float Emitter::magnitude(ngl::Vec4 currentParticle)
+float Emitter::magnitude(ngl::Vec4 currentParticle) // finding the magnitude of a passed in position
 {
-    return std::sqrt(currentParticle.m_x*currentParticle.m_x +
-                     currentParticle.m_y*currentParticle.m_y +
-                     currentParticle.m_z*currentParticle.m_z);
+    return (float)std::sqrt(std::pow(currentParticle.m_x,2) +
+                  std::pow(currentParticle.m_y,2) +
+                  std::pow(currentParticle.m_z,2));
 }
 
 float Emitter::calcDensity(size_t currentParticle) //density calculation
@@ -134,7 +134,6 @@ float Emitter::calcDensity(size_t currentParticle) //density calculation
         float influence = SmoothingKernel(1.0f, dist);
         density += 1.0f * influence; //1.0f SHOULD BE REPLACED BY MASS
     }
-
     return density;
 }
 
@@ -175,11 +174,36 @@ float Emitter::averageNeighDensity(size_t currentParticle)//finding the average 
     return averageDensity;
 }
 
-ngl::Vec3 Emitter:: getPressureKernel(ngl::Vec4 dist)
+void Emitter::debugPressure(ngl::Vec4 dist)
 {
     ngl::Vec3 normalised = {dist.m_x/ magnitude(dist),dist.m_y/ magnitude(dist),dist.m_z/ magnitude(dist)};
-    ngl::Vec3 pressKernel = -(45.0f / (M_PI * std::pow(0.3f, 6))) * normalised * std::pow((0.3f - magnitude(dist)), 2);
-    return pressKernel;
+    ngl::Vec3 denominator = (M_PI * std::pow(1.0f, 6)) * normalised * std::pow((1.0f - magnitude(dist)), 2);
+    //std::cout<<"denominator is: "<<"("<<denominator.m_x<<","<<denominator.m_y<<","<<denominator.m_z<<")"<<std::endl;
+    //std::cout<<"magnitude is: "<<magnitude(dist)<<std::endl;
+    //std::cout<<"dist is: "<<"("<<dist.m_x<<","<<dist.m_y<<","<<dist.m_z<<")"<<std::endl;
+    //std::cout<<"normalized is: "<<"("<<normalised.m_x<<","<<normalised.m_y<<","<<normalised.m_z<<")"<<std::endl;    ;
+}
+
+ngl::Vec3 Emitter::getPressureKernel(ngl::Vec4 dist) // finding the pressure kernel used to calculate the particle pressure
+{
+    ngl::Vec3 normalised = {dist.m_x/ magnitude(dist),dist.m_y/ magnitude(dist),dist.m_z/ magnitude(dist)};
+    ngl::Vec3 denominator = (M_PI * std::pow(1.0f, 6)) * normalised * std::pow((1.0f - magnitude(dist)), 2);
+
+    if(denominator.m_x==0.0f||denominator.m_y==0.0f||denominator.m_z==0.0f)
+    {
+        ngl::Vec3 pressKernel = {0.0f, 0.0f, 0.0f};
+        return pressKernel;
+    }
+    if(std::isnan(denominator.m_x)||std::isnan(denominator.m_y)||std::isnan(denominator.m_z))
+    {
+        ngl::Vec3 pressKernel = {0.0f, 0.0f, 0.0f};
+        return pressKernel;
+    }
+    else
+    {
+        ngl::Vec3 pressKernel = {-45.0f / denominator.m_x, -45.0f / denominator.m_y, -45.0f / denominator.m_z};
+        return pressKernel;
+    }
 }
 
 ngl::Vec3 Emitter::calcPressure(size_t currentParticle) //pressure calculation
@@ -193,18 +217,29 @@ ngl::Vec3 Emitter::calcPressure(size_t currentParticle) //pressure calculation
         {
             for (int dz = -1; dz <= 1; ++dz)
             {
-                ngl::Vec4 neighbourCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighboring cell coordinate
-                uint key = getKeyfromHash(hashCell(static_cast<int>(neighbourCell.m_x), static_cast<int>(neighbourCell.m_y), static_cast<int>(neighbourCell.m_z)));// Retrieves the key for the neighbouring cell
-                int cellStartIndex = startIndices[key];// Retrieve the start index of particles in the neighboring cell
+                ngl::Vec4 neighborCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighbouring cell coordinate
+                uint key = getKeyfromHash(hashCell(static_cast<int>(neighborCell.m_x), static_cast<int>(neighborCell.m_y),static_cast<int>(neighborCell.m_z)));// Retrieves the key for the neighbouring cell
+                int cellStartIndex = startIndices[key];// Retrieves the start index of particles in the neighbouring cell
 
                 for (int i = cellStartIndex; i < pos.size(); ++i) // Iterate over particles in the neighboring cell
                 {
-                    if (spatialLookUp[i] != key) break; // End of neighboring cell
+                    if (spatialLookUp[i] != key)
+                    {
+                        break; // End of neighboring cell
+                    }
 
-                    ngl::Vec4 dist = pos[i] - pos[currentParticle];// Calculate distance between current particle and neighboring particle
-                    pressure[currentParticle].m_x += ((densities[i] + densities[currentParticle])/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_x;//REPLACE 1.0F BY MASS
-                    pressure[currentParticle].m_y += ((densities[i] + densities[currentParticle])/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_y;//REPLACE 1.0F BY MASS
-                    pressure[currentParticle].m_z += ((densities[i] + densities[currentParticle])/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_z;//REPLACE 1.0F BY MASS
+                    ngl::Vec4 dist = pos[currentParticle] - pos[i];// Calculate distance between current particle and neighboring particle
+
+                    if(std::isnan(densities[i])||densities[i]==0.0f)
+                    {
+                        pressure[currentParticle].m_x += 0.0f;
+                    }
+                    else
+                    {
+                        pressure[currentParticle].m_x += ((pressure[i].m_x + pressure[currentParticle].m_x)/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_x;//REPLACE 1.0F BY MASS
+                        pressure[currentParticle].m_y += ((pressure[i].m_y + pressure[currentParticle].m_y)/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_y;//REPLACE 1.0F BY MASS
+                        pressure[currentParticle].m_z += ((pressure[i].m_z + pressure[currentParticle].m_z)/2) * (1.0f/densities[i]) * getPressureKernel(dist).m_z;//REPLACE 1.0F BY MASS
+                    }
                 }
             }//end of dz loop
         }//end of dy loop
@@ -214,13 +249,13 @@ ngl::Vec3 Emitter::calcPressure(size_t currentParticle) //pressure calculation
     return pressure[currentParticle];
 }
 
-float getViscKernel(float dist)
+float getViscKernel(float dist) // finding the viscosity kernel used to calculate the particle viscosity
 {
-    float viscKernel = 45.0f / (M_PI * std::pow(0.3f, 6)) * (0.3f - dist);
+    float viscKernel = 45.0f / (M_PI * std::pow(1.0f, 6)) * (1.0f - dist);
     return viscKernel;
 }
 
-ngl::Vec3 Emitter::calcViscosity(size_t currentParticle)
+ngl::Vec3 Emitter::calcViscosity(size_t currentParticle) // calculating viscosity of the passed in particle
 {
     float const vConst = 3.5f;
     viscosity[currentParticle] = ngl::Vec3(0.0f, 0.0f, 0.0f);
@@ -234,9 +269,7 @@ ngl::Vec3 Emitter::calcViscosity(size_t currentParticle)
             for (int dz = -1; dz <= 1; ++dz)
             {
                 ngl::Vec4 neighborCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighbouring cell coordinate
-                //std::cout<<neighborCell.m_x<<std::endl;
                 uint key = getKeyfromHash(hashCell(static_cast<int>(neighborCell.m_x), static_cast<int>(neighborCell.m_y),static_cast<int>(neighborCell.m_z)));// Retrieves the key for the neighbouring cell
-                //std::cout<<key<<std::endl;
                 int cellStartIndex = startIndices[key];// Retrieves the start index of particles in the neighbouring cell
 
                 for (int i = cellStartIndex; i < pos.size(); ++i) // Iterate over particles in the neighbouring cell
@@ -245,10 +278,16 @@ ngl::Vec3 Emitter::calcViscosity(size_t currentParticle)
 
                     float dist = magnitude(pos[i]-pos[currentParticle]);// Calculate distance between current particle and neighbouring particle
                     ngl::Vec3 dist2 = dir[i]-dir[currentParticle];// Calculate difference in velocity between current particle and neighbouring particle
+                    float densityDenom = (1.0f / densities[i]);
 
-                    viscosity[currentParticle].m_x += dist2.m_x*(1.0f / densities[i])*getViscKernel(dist);//REPLACE 1.0F BY MASS
-                    viscosity[currentParticle].m_y += dist2.m_y*(1.0f / densities[i])*getViscKernel(dist);
-                    viscosity[currentParticle].m_z += dist2.m_z*(1.0f / densities[i])*getViscKernel(dist);
+                    if(std::isnan(densityDenom)||densityDenom==0)
+                    {
+                        densityDenom = 0;
+                    }
+
+                    viscosity[currentParticle].m_x += dist2.m_x*densityDenom*getViscKernel(dist);//REPLACE 1.0F BY MASS
+                    viscosity[currentParticle].m_y += dist2.m_y*densityDenom*getViscKernel(dist);
+                    viscosity[currentParticle].m_z += dist2.m_z*densityDenom*getViscKernel(dist);
                 }
             }//end of dz loop
         }//end of dy loop
@@ -257,7 +296,7 @@ ngl::Vec3 Emitter::calcViscosity(size_t currentParticle)
     return viscosity[currentParticle];
 }
 
-ngl::Vec3 Emitter::calcBuoyancy(size_t currentParticle, ngl::Vec3 gravity)
+ngl::Vec3 Emitter::calcBuoyancy(size_t currentParticle, ngl::Vec3 gravity) // calculating buoyancy for the passed in particle
 {
     float const buoyConst = 0.0f;
     float const restDensity = 998.2f;
@@ -308,7 +347,7 @@ void Emitter::updateStartIndices() //updating startIndices array
     }
 }
 
-void Emitter::updateSpatialLookup()
+void Emitter::updateSpatialLookup() //updating spatialLookup array used for spatial-hashing
 {
     spatialLookUp.resize(pos.size());
     startIndices.resize(pos.size());
@@ -321,7 +360,6 @@ void Emitter::updateSpatialLookup()
     {
         uint currentKey = spatialLookUp[p];
         spatialLookUp[p] = getKeyfromHash(hashCell(pos[p].m_x, pos[p].m_y, pos[p].m_z));
-        //std::cout<<spatialLookUp[p]<<", ";
 
         if (currentKey != spatialLookUp[p])
         {
@@ -336,7 +374,7 @@ ngl::Vec3 Emitter:: updateVelocity(size_t currentParticle) //updating velocity v
 {
     ngl::Vec4 currentCell = positionToCellCoord(pos[currentParticle]); // Gets the cell coordinate of the current particle
 
-    float const h = 0.3f;
+    float const h = 1.0f;
     float nei = 0.0f;
     float const velConst = 0.1f;
 
@@ -347,11 +385,8 @@ ngl::Vec3 Emitter:: updateVelocity(size_t currentParticle) //updating velocity v
             for (int dz = -1; dz <= 1; ++dz)
             {
                 ngl::Vec4 neighborCell(currentCell.m_x + dx, currentCell.m_y + dy, currentCell.m_z + dz, 0.0f);// Calculates the neighboring cell coordinate
-                //std::cout<<neighborCell.m_x<<std::endl;
                 uint key = getKeyfromHash(hashCell(static_cast<int>(neighborCell.m_x), static_cast<int>(neighborCell.m_y),static_cast<int>(neighborCell.m_z)));// Retrieves the key for the neighbouring cell
-                //std::cout<<key<<std::endl;
                 int cellStartIndex = startIndices[key];// Retrieves the start index of particles in the neighboring cell
-                //std::cout<<cellStartIndex<<std::endl;
                 for (int i = cellStartIndex; i < pos.size(); ++i) // Iterate over particles in the neighboring cell
                 {
                     if (spatialLookUp[i] != key) break; // End of neighboring cell
@@ -373,8 +408,8 @@ ngl::Vec3 Emitter:: updateVelocity(size_t currentParticle) //updating velocity v
 
 void Emitter:: checkBoundary(size_t currentParticle) //Ensuring the particles remain within the specified boundary
 {
-    float const collisionDamping = 6.8f; // used to reduce the velocity of the particle when colliding with a boundary
-    ngl::Vec3 const boundary = {15.0f,30.0f,25.0f};//specified boundary
+    float const collisionDamping = 0.6f; // used to reduce the velocity of the particle when colliding with a boundary
+    ngl::Vec3 const boundary = {6.0f,6.0f,6.0f};//specified boundary
 
     if (abs(pos[currentParticle].m_x) > boundary.m_x || abs(pos[currentParticle].m_x) < -boundary.m_x)//checking x-component of particle
     {
@@ -404,8 +439,9 @@ void Emitter::updateColour(size_t currentParticle)
 
 void Emitter::update()
 {
-    float _dt = 0.1f;
-    ngl::Vec3 gravity(0.0f, -9.87f, 0.0f);
+    float _dt = 0.02f;
+
+    ngl::Vec3 gravity(0.0f, -1.0f, 0.0f);
 
     // Choose number to birth
     int numberToBirth = 1000 + ngl::Random::randomPositiveNumber(1500);
